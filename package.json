@@ -2,10 +2,10 @@
   "name": "techtribe_backend",
   "version": "1.0.0",
   "description": "NodeJS server built using Express and using Mongodb Atlas to store its structured and organized data while using AWS as a provider.",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js"
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
   },
   "keywords": [],
   "author": "",
