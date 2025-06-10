@@ -32,4 +32,16 @@ const signupDataValidator = (res, data) => {
   }
 };
 
-module.exports = { signupDataValidator };
+const profileEditDetailsValidator = (data) => {
+  const restrictedFields = ["email", "password"];
+
+  const isEditRestricted = Object.keys(data).some((field) =>
+    restrictedFields.includes(field)
+  );
+
+  if (isEditRestricted) {
+    throw new Error("Invalid edit request");
+  }
+};
+
+module.exports = { signupDataValidator, profileEditDetailsValidator };
