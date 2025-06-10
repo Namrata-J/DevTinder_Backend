@@ -4,6 +4,7 @@ const port = 3000;
 const { connectDb } = require("./config/database");
 const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
+const connectionRequestRouter = require('./routes/connectionRequest');
 var cookieParser = require("cookie-parser");
 
 // middlewares
@@ -13,6 +14,7 @@ app.use(cookieParser());
 // routers
 app.use("/", authRouter);
 app.use("/profile", profileRouter);
+app.use("/request", connectionRequestRouter);
 
 // connect to the db first and then listen on the port
 connectDb()

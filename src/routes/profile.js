@@ -6,7 +6,7 @@ profileRouter.get("/view", authMiddleware, async (req, res) => {
   try {
     const user = req.user;
 
-    res.send({
+    return res.send({
       message: "Details fetched successfuly",
       data: user,
     });
