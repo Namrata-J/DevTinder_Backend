@@ -2,10 +2,15 @@ const express = require("express");
 const app = express();
 const port = 3000;
 const { connectDb } = require("./config/database");
+const authRouter = require('./routes/auth');
+var cookieParser = require('cookie-parser')
 
-app.get("/", (req, res) => {
-  res.send("Hello world!");
-});
+// middlewares
+app.use(express.json());
+app.use(cookieParser());
+
+// routers
+app.use('/', authRouter);
 
 // connect to the db first and then listen on the port
 connectDb()

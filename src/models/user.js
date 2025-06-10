@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
-const { Schema, model } = mongoose;
-const { validator } = require("validator");
+const { Schema } = mongoose;
+const validator = require("validator");
+var jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 const userSchema = new Schema(
   {
@@ -41,7 +43,6 @@ const userSchema = new Schema(
     },
     profession: {
       type: String,
-      required: true,
     },
     company: {
       type: String,
@@ -49,7 +50,9 @@ const userSchema = new Schema(
     expererienceLevel: {
       type: String,
       enum: ["0-3", "3-5", ">5"],
-      default: "0-3",
+      required: function () {
+        return this.profession && this.profession.length > 0;
+      },
       meta: { comment: "No of years of experience the user holds" },
     },
     skills: {
@@ -73,7 +76,11 @@ const userSchema = new Schema(
         "https://t3.ftcdn.net/jpg/03/53/11/00/360_F_353110097_nbpmfn9iHlxef4EDIhXB1tdTD0lcWhG9.jpg",
       validate: {
         validator: function (val) {
-          return validator.isURL(val);
+          if (val) {
+            return validator.isURL(val);
+          } else {
+            return true;
+          }
         },
         message: (props) => `${props?.value} is not a valid url`,
       },
@@ -88,10 +95,32 @@ const userSchema = new Schema(
   },
   {
     timestamps: true,
-    strict: "throw",
   }
 );
 
-const User = model('users', userSchema, 'users');
+userSchema.methods.getJwt = async function () {
+  const user = this;
+  const token = await jwt.sign({ _id: user?._id }, "NJNode", {
+    expiresIn: "1d",
+  });
+
+  return token;
+};
+
+userSchema.methods.validatePassword = async function (password) {
+  const user = this;
+  const passwordInputByUser = password;
+
+  const isValidPwd = await bcrypt.compare(
+    passwordInputByUser,
+    user?.password
+  );
+
+  return isValidPwd;
+};
+
+const User = mongoose.model("users", userSchema, "users");
+
+User.init();
 
 module.exports = { User };
