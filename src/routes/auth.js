@@ -9,7 +9,7 @@ authRouter.post("/signup", async (req, res) => {
     const data = req.body || {};
 
     // validate the data
-    signupDataValidator(res, data);
+    signupDataValidator(data);
 
     // check if user already exists
     const isExistingUser = await User.findOne({ email: data?.email });

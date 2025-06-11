@@ -1,6 +1,6 @@
 const validator = require("validator");
 
-const signupDataValidator = (res, data) => {
+const signupDataValidator =(data) => {
   const {
     firstName,
     email,
@@ -14,21 +14,21 @@ const signupDataValidator = (res, data) => {
     !firstName ||
     !email ||
     !password ||
-    !(profession?.length > 0 && expererienceLevel)
+    (profession?.length > 0 && !expererienceLevel)
   ) {
-    return res.status(400).send({ message: "Missing fields" });
+    throw new Error({ message: "Missing fields" });
   }
 
   if (!validator.isEmail(email)) {
-    return res.status(400).send({ message: "Invalid email" });
+    throw new Error({ message: "Invalid email" });
   }
 
   if (!validator.isStrongPassword(password)) {
-    return res.status(400).send({ message: "Invalid password" });
+    throw new Error({ message: "Invalid password" });
   }
 
   if (photoUrl && !validator.isURL(photoUrl)) {
-    return res.status(400).send({ message: "Invalid photo url" });
+    throw new Error({ message: "Invalid photo url" });
   }
 };
 

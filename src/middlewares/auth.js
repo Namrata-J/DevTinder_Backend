@@ -3,10 +3,10 @@ const { User } = require("../models/user");
 
 const authMiddleware = async (req, res, next) => {
   try {
-    const { token } = req.cookie || {};
+    const { token } = req.cookies || {};
 
     if (!token) {
-      req.status(401).send("Invalid token");
+      res.status(401).send("Invalid token");
     }
 
     // decode the token

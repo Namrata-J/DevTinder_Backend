@@ -1,6 +1,7 @@
 const express = require("express");
 const profileRouter = express.Router();
 const authMiddleware = require("../middlewares/auth");
+const { profileEditDetailsValidator } = require("../utils/validation");
 
 profileRouter.get("/view", authMiddleware, async (req, res) => {
   try {

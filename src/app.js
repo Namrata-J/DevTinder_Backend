@@ -14,7 +14,7 @@ app.use(cookieParser());
 // routers
 app.use("/", authRouter);
 app.use("/profile", profileRouter);
-app.use("/request", connectionRequestRouter);
+app.use("/connectionRequest", connectionRequestRouter);
 
 // connect to the db first and then listen on the port
 connectDb()

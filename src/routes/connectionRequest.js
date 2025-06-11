@@ -63,7 +63,7 @@ connectionRequestRouter.post(
   }
 );
 
-connectionRequestRouter.post(
+connectionRequestRouter.patch(
   "/review/:status/:requestId",
   authMiddleware,
   async (req, res) => {
@@ -88,14 +88,14 @@ connectionRequestRouter.post(
       if (!validConnectionRequest) {
         return res
           .status(404)
-          .send({ message: "Connection request not found" });
+          .send({ message: "Connection request not found", data: [] });
       }
 
       validConnectionRequest.status = status;
 
       const updatedConnectionRequest = await validConnectionRequest.save();
 
-      req.send({
+      res.send({
         message: "Connection request" + status,
         data: updatedConnectionRequest,
       });
