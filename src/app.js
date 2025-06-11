@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const port = 3000;
 const { connectDb } = require("./config/database");
+const userRouter = require('./routes/user');
 const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
 const connectionRequestRouter = require('./routes/connectionRequest');
@@ -13,6 +14,7 @@ app.use(cookieParser());
 
 // routers
 app.use("/", authRouter);
+app.use("/user", userRouter);
 app.use("/profile", profileRouter);
 app.use("/connectionRequest", connectionRequestRouter);
 
