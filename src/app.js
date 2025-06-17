@@ -1,16 +1,18 @@
 const express = require("express");
 const app = express();
-const port = 3000;
+const port = 7777;
 const { connectDb } = require("./config/database");
 const userRouter = require('./routes/user');
 const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
 const connectionRequestRouter = require('./routes/connectionRequest');
 var cookieParser = require("cookie-parser");
+var cors = require('cors');
 
 // middlewares
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors());
 
 // routers
 app.use("/", authRouter);
