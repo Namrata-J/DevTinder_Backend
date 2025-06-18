@@ -42,7 +42,7 @@ authRouter.post("/signup", async (req, res) => {
     res.send({ message: "User created successfuly", data: savedUser });
   } catch (err) {
     console.error("ERROR while trying to signup user" + err);
-    res.status(500).send("ERROR: " + err);
+    res.status(500).json({ message: err.message });
   }
 });
 
@@ -54,7 +54,7 @@ authRouter.post("/login", async (req, res) => {
     const existingUser = await User.findOne({ email });
 
     if (!existingUser) {
-      throw new Error("Invalid credentials");
+      return res.status(404).send({message: 'User not found' })
     }
 
     // check if password is valid
@@ -76,7 +76,7 @@ authRouter.post("/login", async (req, res) => {
     });
   } catch (err) {
     console.error("ERROR while trying to login user" + err);
-    res.status(500).send("ERROR: " + err);
+    res.status(500).json({ message: err.message });
   }
 });
 
@@ -88,7 +88,7 @@ authRouter.post("/logout", async (req, res) => {
     res.send({ message: 'Logged out successfuly'});
   } catch (err) {
     console.error("ERROR while trying to logout user" + err);
-    res.status(500).send("ERROR: " + err);
+    res.status(500).json({ message: err.message });
   }
 });
 
