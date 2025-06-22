@@ -13,7 +13,7 @@ profileRouter.get("/view", authMiddleware, async (req, res) => {
     });
   } catch (err) {
     console.error("ERROR while trying to fetch user's profile details" + err);
-    res.status(500).send("ERROR: " + err);
+    res.status(500).json({ message: err.message });
   }
 });
 
@@ -34,7 +34,7 @@ profileRouter.patch("/edit", authMiddleware, async (req, res) => {
     });
   } catch (err) {
     console.error("ERROR while trying to edit user's profile details" + err);
-    res.status(500).send("ERROR: " + err);
+    res.status(500).json({ message: err.message });
   }
 });
 
