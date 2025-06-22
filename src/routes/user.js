@@ -28,7 +28,7 @@ userRouter.get("/connections", authMiddleware, async (req, res) => {
     res.send({ message: "Connections fetched successfuly", data });
   } catch (err) {
     console.error("ERROR while trying to fetch user connections" + err);
-    res.status(500).send("ERROR: " + err);
+    res.status(500).json({ message: err.message });
   }
 });
 
@@ -49,7 +49,7 @@ userRouter.get("/requests/received", authMiddleware, async (req, res) => {
     console.error(
       "ERROR while trying to fetch user's received connection requests" + err
     );
-    res.status(500).send("ERROR: " + err);
+    res.status(500).json({ message: err.message });
   }
 });
 
@@ -85,7 +85,7 @@ userRouter.get("/feed", authMiddleware, async (req, res) => {
     });
   } catch (err) {
     console.error("ERROR while trying to fetch user's feed" + err);
-    res.status(500).send("ERROR: " + err);
+    res.status(500).json({ message: err.message });
   }
 });
 
