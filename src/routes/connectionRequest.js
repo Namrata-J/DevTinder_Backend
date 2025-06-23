@@ -58,7 +58,7 @@ connectionRequestRouter.post(
       });
     } catch (err) {
       console.error("ERROR while trying to send connection request" + err);
-      res.status(500).send("ERROR: " + err);
+      res.status(500).json({ message: err.message });
     }
   }
 );
@@ -101,7 +101,7 @@ connectionRequestRouter.patch(
       });
     } catch (err) {
       console.error("ERROR while trying to review connection request" + err);
-      res.status(500).send("ERROR: " + err);
+      res.status(500).json({ message: err.message });
     }
   }
 );
