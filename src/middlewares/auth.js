@@ -10,7 +10,7 @@ const authMiddleware = async (req, res, next) => {
     }
 
     // decode the token
-    const decodedToken = await jwt.verify(token, "NJNode");
+    const decodedToken = await jwt.verify(token, process.env.JWT_SECRET_KEY);
 
     const { _id } = decodedToken;
     const user = await User.findById(_id);

@@ -100,7 +100,7 @@ const userSchema = new Schema(
 
 userSchema.methods.getJwt = async function () {
   const user = this;
-  const token = await jwt.sign({ _id: user?._id }, "NJNode", {
+  const token = await jwt.sign({ _id: user?._id }, process.env.JWT_SECRET_KEY, {
     expiresIn: "1d",
   });
 
@@ -111,10 +111,7 @@ userSchema.methods.validatePassword = async function (password) {
   const user = this;
   const passwordInputByUser = password;
 
-  const isValidPwd = await bcrypt.compare(
-    passwordInputByUser,
-    user?.password
-  );
+  const isValidPwd = await bcrypt.compare(passwordInputByUser, user?.password);
 
   return isValidPwd;
 };
