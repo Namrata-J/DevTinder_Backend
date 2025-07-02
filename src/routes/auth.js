@@ -66,7 +66,7 @@ authRouter.post("/signup", async (req, res) => {
 
     res.send({
       message: "Otp sent successfully",
-      data: { email: data?.email, otp: generatedOtp },
+      data: { email: data?.email },
     });
   } catch (err) {
     console.error("ERROR while trying to signup user" + err);
