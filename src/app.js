@@ -1,10 +1,6 @@
 const express = require("express");
 const app = express();
 const { connectDb } = require("./config/database");
-const userRouter = require("./routes/user");
-const authRouter = require("./routes/auth");
-const profileRouter = require("./routes/profile");
-const connectionRequestRouter = require("./routes/connectionRequest");
 var cookieParser = require("cookie-parser");
 var cors = require("cors");
 require("dotenv").config({
@@ -20,6 +16,11 @@ app.use(
     origin: ["http://localhost:3000", "http://13.201.6.106"],
   })
 );
+
+const userRouter = require("./routes/user");
+const authRouter = require("./routes/auth");
+const profileRouter = require("./routes/profile");
+const connectionRequestRouter = require("./routes/connectionRequest");
 
 // routers
 app.use("/", authRouter);

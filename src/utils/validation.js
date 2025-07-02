@@ -1,5 +1,17 @@
 const validator = require("validator");
 
+const verifyDataValidator = (data) => {
+  const { otp, email } = data || {};
+
+  if(otp && otp.length !== 6) {
+    throw new Error({ message: "Invalid otp length" });
+  }
+
+  if (!validator.isEmail(email)) {
+    throw new Error({ message: "Invalid email" });
+  }
+}
+
 const signupDataValidator =(data) => {
   const {
     firstName,
@@ -44,4 +56,4 @@ const profileEditDetailsValidator = (data) => {
   }
 };
 
-module.exports = { signupDataValidator, profileEditDetailsValidator };
+module.exports = { verifyDataValidator, signupDataValidator, profileEditDetailsValidator };
