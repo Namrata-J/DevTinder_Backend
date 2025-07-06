@@ -2,7 +2,7 @@ const express = require("express");
 const authRouter = express.Router();
 const { User } = require("../models/user");
 const { Otp } = require("../models/otp");
-const sendEmail = require("../utils/resendUtils");
+const sendEmail = require("../services/resend");
 const { generateHash, generateSecureOtp } = require("../utils/authUtils");
 const {
   signupDataValidator,
