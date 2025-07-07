@@ -22,21 +22,21 @@ const initSocket = (httpServer) => {
   io.use(async (socket, next) => {
     const token = socket?.handshake?.auth?.token;
 
-    if (token) {
+    if (!token) {
+      return next(new Error("Authentication error"));
+    }
+
+    try {
       const decodedToken = await jwt.verify(token, process.env.JWT_SECRET_KEY);
       const { _id } = decodedToken;
       const user = await User.findById(_id);
-      if (user) {
-        socket.user = user;
-        next();
-      } else {
-        socket.emit("unauthorized");
-        socket.disconnect(true);
-        return next(new Error("User not found"));
-      }
-    } else {
-      socket.emit("unauthorized");
-      socket.disconnect(true);
+
+      if (!user) return next(new Error("User not found"));
+
+      socket.user = user;
+      next();
+    } catch (err) {
+      console.log("Socket authentication error:", err);
       return next(new Error("Authentication error"));
     }
   });
