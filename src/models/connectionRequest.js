@@ -29,6 +29,24 @@ connectionRequestSchema.pre("save", function (next) {
   next();
 });
 
+connectionRequestSchema.statics.areConnected = async function ({
+  userId1,
+  userId2,
+}) {
+  const isAConnection = await this.findOne({
+    $or: [
+      { fromUserId: userId1, toUserId: userId2 },
+      { fromUserId: userId2, toUserId: userId1 },
+    ],
+    status: "accepted",
+  });
+
+  if (isAConnection) {
+    return true;
+  }
+  return false;
+};
+
 const ConnectionRequest = mongoose.model(
   "connectionRequests",
   connectionRequestSchema,

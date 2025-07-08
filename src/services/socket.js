@@ -2,11 +2,30 @@ const crypto = require("crypto");
 const socket = require("socket.io");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models/user");
+const { Chat } = require("../models/chat");
+const { Messages } = require("../models/messages");
+const { ConnectionRequest } = require("../models/connectionRequest");
 
-const hashedRoomId = (senderId, receiverId) => {
-  const roomId = [senderId, receiverId].sort().join("-");
-  const hashedRoomId = crypto.createHash("sha256").update(roomId).digest("hex");
-  return hashedRoomId;
+const getChatRoomId = async (senderId, receiverId) => {
+  let chatId = "";
+
+  // check if the chat room for participants already exists
+  const existingChat = await Chat.findOne({
+    participants: { $all: [senderId, receiverId] },
+  });
+
+  if (!existingChat) {
+    // create a new chat room if it doesn't exist
+    const newChat = new Chat({
+      participants: [senderId, receiverId],
+    });
+    const chat = await newChat.save();
+    chatId = chat._id.toString();
+  } else {
+    chatId = existingChat._id.toString();
+  }
+
+  return chatId;
 };
 
 const initSocket = (httpServer) => {
@@ -42,19 +61,92 @@ const initSocket = (httpServer) => {
   });
 
   io.on("connection", (socket) => {
-    socket.on("joinChat", ({ senderId, receiverId }) => {
-      const roomId = hashedRoomId(senderId, receiverId);
-      socket.join(roomId);
+    socket.on("joinChat", async ({ receiverId }) => {
+      const senderId = socket.user._id.toString();
+
+      // check if sender is connected to the receiver i.e. if sender is eligible to initiate a chat with the receiver
+      const areConnected = await ConnectionRequest.areConnected({
+        userId1: senderId,
+        userId2: receiverId,
+      });
+
+      if (!areConnected) {
+        return socket.emit("chat_error", {
+          message: "You are not connected with this user.",
+        });
+      }
+
+      // get the chat room id for the sender and receiver
+      const chatId = await getChatRoomId(senderId, receiverId);
+      if (!chatId) {
+        return socket.emit("chat_error", {
+          message: "Chat room could not be created.",
+        });
+      }
+
+      // join the chat room
+      socket.join(chatId);
     });
 
     socket.on(
       "sendMessage",
-      ({ senderId, receiverId, senderMessage, senderFirstName }) => {
-        const roomId = hashedRoomId(senderId, receiverId);
-        io.to(roomId).emit("receiveMessage", {
-          senderId,
-          senderFirstName,
-          senderMessage,
+      async ({ receiverId, senderMessage }) => {
+        const senderId = socket.user._id.toString();
+
+        // check if sender is connected to the receiver i.e. if sender is eligible to initiate a chat with the receiver
+        const areConnected = await ConnectionRequest.areConnected({
+          userId1: senderId,
+          userId2: receiverId,
+        });
+
+        if (!areConnected) {
+          return socket.emit("chat_error", {
+            message: "You are not connected with this user.",
+          });
+        }
+
+        // get the chat room id for the sender and receiver
+        const chatId = await getChatRoomId(senderId, receiverId);
+
+        if (!chatId) {
+          return socket.emit("chat_error", {
+            message: "Chat room could not be created.",
+          });
+        }
+
+        // Save the message to the database
+        const newMessage = new Messages({
+          chat: chatId,
+          sender: senderId,
+          message: senderMessage,
+        }); 
+
+        const message = await newMessage.save();
+
+        if (!message) {
+          return socket.emit("chat_error", {
+            message: "Message could not be sent.",
+          });
+        }
+
+        const dateObj = new Date(message?.createdAt);
+        const date = dateObj.toLocaleString("en-GB", {
+          day: "2-digit",
+          month: "long",
+          year: "numeric",
+        });
+        const time = dateObj.toLocaleTimeString("en-GB", {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+
+        // Emit the message to the chat room
+        io.to(chatId).emit("receiveMessage", {
+          messageId: message?._id,
+          message: message?.message,
+          senderId: message?.sender,
+          date,
+          time
         });
       }
     );
@@ -63,4 +155,4 @@ const initSocket = (httpServer) => {
   });
 };
 
-module.exports = { initSocket };
+module.exports = { initSocket, getChatRoomId };
