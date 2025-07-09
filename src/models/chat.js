@@ -16,8 +16,6 @@ const chatSchema = new Schema(
   }
 );
 
-chatSchema.index({ participants: 1 }, { unique: true });
-
 const Chat = mongoose.model("chats", chatSchema);
 Chat.init();
 
